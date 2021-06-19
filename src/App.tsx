@@ -1,26 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from 'react'
+import { Route, Switch } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { TasksPage } from './pages/TasksPage'
+import { AddTaskPage } from './pages/AddTaskPage'
+import { EditTaskPage } from './pages/EditTaskPage'
+import { LoginPage } from './pages/LoginPage'
+import { ActionType } from './store/action-types'
+import { ProtectedRoute } from './components/ProtectedRoute'
 
-function App() {
+export const App = () => {
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      dispatch({
+        type: ActionType.LOGIN,
+      })
+    }
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Switch>
+      <Route exact path="/" component={TasksPage} />
+      <Route path="/login" component={LoginPage} />
+      <Route path="/add" component={AddTaskPage} />
+      <ProtectedRoute path="/edit/:id" render={() => <EditTaskPage />} />
+    </Switch>
+  )
 }
-
-export default App;
